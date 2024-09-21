@@ -1,0 +1,17 @@
+services:
+  westoniasmp:
+    build:
+      context: .
+      dockerfile: minecraft-server.Dockerfile
+    ports:
+      - 25565:25565
+    environment:
+      EULA: "TRUE"
+      MEMORY: "4G"
+      TYPE: "FOLIA"
+    tty: true
+    stdin_open: true
+    restart: always
+    volumes:
+      # attach a directory relative to the directory containing this compose file
+      - ./westoniasmp-data:/data
