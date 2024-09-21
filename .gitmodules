@@ -1,0 +1,9 @@
+[submodule "WestoniaWeb"]
+	path = WestoniaWeb
+	url = https://github.com/WestoniaSMP/WestoniaWeb.git
+[submodule "WestoniaAPI"]
+	path = WestoniaAPI
+	url = https://github.com/WestoniaSMP/WestoniaAPI.git
+[submodule "Westonia"]
+	path = Westonia
+	url = https://github.com/WestoniaSMP/Westonia.git
