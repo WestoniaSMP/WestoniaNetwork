@@ -1,17 +1,134 @@
 services:
-  westoniasmp:
-    build:
-      context: .
-      dockerfile: minecraft-server.Dockerfile
-    ports:
-      - 25565:25565
+  ##################
+  #    Westonia    #
+  # Velocity Proxy #
+  ##################
+  westonia-proxy:
+    image: itzg/mc-proxy
     environment:
-      EULA: "TRUE"
-      MEMORY: "4G"
-      TYPE: "FOLIA"
-    tty: true
-    stdin_open: true
+      TYPE: "VELOCITY"
+      VELOCITY_VERSION: "latest"
+      MEMORY: ${PROXY_MEMORY-512M}
+      tty: true
+      stdin_open: true
+    ports:
+      - "25565:25565"
     restart: always
     volumes:
-      # attach a directory relative to the directory containing this compose file
-      - ./westoniasmp-data:/data
+      # Proxy data
+      - ./Docker/ServiceData/westonia-proxy-data:/server
+      # Proxy config
+      - ./Docker/MinecraftDefaults/ConfigProxy/velocity.toml:/config/velocity.toml
+      - ./Docker/MinecraftDefaults/ConfigProxy/forwarding.secret:/config/forwarding.secret
+      # Proxy plugins
+      #- ./Docker/MinecraftDefaults/PluginsProxy:/plugins
+    networks:
+      - minecraft
+
+  ################
+  #   Westonia   #
+  # Lobby Server #
+  ################
+  westonia-lobby:
+    image: itzg/minecraft-server
+    environment:
+      EULA: "TRUE"
+      MEMORY: "${LOBBY_MEMORY-2G}"
+      TYPE: "PURPUR"
+      tty: true
+      stdin_open: true
+      ONLINE_MODE: "FALSE"
+      PURPUR_BUILD: "2324"
+      ENABLE_AUTOPAUSE: true
+      MAX_TICK_TIME: "-1"
+      REPLACE_ENV_VARIABLES: true
+      ENV_VARIABLE_PREFIX: "WSTLOBBY_" # TODO: Test this
+    restart: always
+    volumes:
+      # Lobby data
+      - ./Docker/ServiceData/westonia-lobby-data:/data
+      # Lobby config
+      - ./Docker/MinecraftDefaults/GeneralPurpurConfig/config/paper-global.yml:/config/paper-global.yml
+      #- ./Docker/MinecraftDefaults/ConfigLobby/config.yml:/config/PluginConfig/config.yml
+      # Lobby plugins
+      #- ./Docker/MinecraftDefaults/PluginsLobby:/plugins
+    networks:
+      - minecraft
+
+  ###################
+  #    Westonia     #
+  # Roleplay Server #
+  ###################
+  westonia-rp:
+    build:
+      context: Docker/
+      dockerfile: Dockerfiles/WestoniaRP.Dockerfile
+    environment:
+      EULA: "TRUE"
+      MEMORY: "${RP_MEMORY-2G}"
+      PURPUR_BUILD: "2324"
+      ONLINE_MODE: "FALSE"
+      TYPE: "PURPUR"
+      tty: true
+      stdin_open: true
+      ENABLE_AUTOPAUSE: "TRUE"
+      SNOOPER_ENABLED: "FALSE"
+      MAX_TICK_TIME: "-1"
+    restart: always
+    volumes:
+      # RP data
+      - ./Docker/ServiceData/westonia-rp-data:/data
+      # RP config
+      - ./Docker/MinecraftDefaults/GeneralPurpurConfig/config/paper-global.yml:/config/paper-global.yml
+      #- ./Docker/MinecraftDefaults/ConfigRP/config.yml:/config/PluginConfig/config.yml
+      # RP plugins
+      #- ./Docker/MinecraftDefaults/PluginsRP:/plugins
+    networks:
+      - minecraft
+
+  ###################
+  #    Westonia     #
+  # Building Server #
+  ###################
+  westonia-building:
+    image: itzg/minecraft-server
+    environment:
+      EULA: "TRUE"
+      MEMORY: "${BUILDING_MEMORY-2G}"
+      TYPE: "PURPUR"
+      tty: true
+      ONLINE_MODE: "FALSE"
+      stdin_open: true
+      PURPUR_BUILD: "2324"
+      ENABLE_AUTOPAUSE: "TRUE"
+      SNOOPER_ENABLED: "FALSE"
+      MAX_TICK_TIME: "-1"
+    restart: always
+    volumes:
+      # Building data
+      - ./Docker/ServiceData/westonia-building-data/:/data
+      # Building config
+      - ./Docker/MinecraftDefaults/GeneralPurpurConfig/config/paper-global.yml:/config/paper-global.yml
+      #- ./Docker/MinecraftDefaults/ConfigBuilding/config.yml:/config/PluginConfig/config.yml
+      # Building plugins
+      #- ./Docker/MinecraftDefaults/PluginsBuilding/:/plugins
+    networks:
+      - minecraft
+
+############
+# Networks #
+############
+networks:
+  #############
+  # Minecraft #
+  #############
+  minecraft:
+    driver: bridge
+
+###########
+# Volumes #
+###########
+#volumes:
+#  westonia-proxy-data:
+#  westonia-lobby-data:
+#  westonia-rp-data:
