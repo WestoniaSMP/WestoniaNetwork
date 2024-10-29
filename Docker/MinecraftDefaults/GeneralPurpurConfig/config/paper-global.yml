@@ -97,7 +97,7 @@ proxies:
   velocity:
     enabled: true
     online-mode: true
-    secret: "TollesSecret"
+    secret: "${WST_VELOCITY_SECRET}"
 scoreboards:
   save-empty-scoreboard-teams: true
   track-plugin-scoreboards: false

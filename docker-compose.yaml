@@ -6,17 +6,28 @@ services:
   westonia-proxy:
     image: itzg/mc-proxy
     environment:
-      TYPE: "VELOCITY"
-      VELOCITY_VERSION: "latest"
-      MEMORY: ${PROXY_MEMORY-512M}
       tty: true
       stdin_open: true
+      # Proxy settings      
+      TYPE: "VELOCITY"
+      VELOCITY_BUILD_ID: "${VELOCITY_BUILD-latest}"
+      MEMORY: ${PROXY_MEMORY-512M}
+      ICON: "${ICON}"
+      # Enable env variable replacement
+      REPLACE_ENV_VARIABLES: "TRUE"
+      REPLACE_ENV_SUFFIXES: "yml,yaml,txt,cfg,conf,properties,hjson,json,tml,toml,secret"
+      ENV_VARIABLE_PREFIX: "WST_"
+      # Set variables
+      WST_ENVIRONMENT: "${ENVIRONMENT}" # Used for servers configuration (see Docker/MineraftDefaults/ConfigProxy/velocity.toml in [servers])
+      WST_VELOCITY_SECRET: "${NETWORK_SECRET}"
+      WST_PROXY_MOTD: "${MOTD}"
+      WST_PROXY_MAX_PLAYERS: "${PROXY_MAX_PLAYERS-25}"
     ports:
-      - "25565:25565"
+      - "${HOST_PORT-25565}:25565"
     restart: always
     volumes:
       # Proxy data
-      - ./Docker/ServiceData/westonia-proxy-data:/server
+      - ./Docker/ServiceData/${ENVIRONMENT}/westonia-proxy-data:/server
       # Proxy config
       - ./Docker/MinecraftDefaults/ConfigProxy/velocity.toml:/config/velocity.toml
       - ./Docker/MinecraftDefaults/ConfigProxy/forwarding.secret:/config/forwarding.secret
@@ -38,15 +49,21 @@ services:
       tty: true
       stdin_open: true
       ONLINE_MODE: "FALSE"
-      PURPUR_BUILD: "2324"
+      PURPUR_BUILD: "${PURPUR_BUILD-latest}"
       ENABLE_AUTOPAUSE: true
       MAX_TICK_TIME: "-1"
-      REPLACE_ENV_VARIABLES: true
-      ENV_VARIABLE_PREFIX: "WSTLOBBY_" # TODO: Test this
+      MAX_PLAYERS: "${LOBBY_MAX_PLAYERS-15}"
+      # enable env variable replacement
+      REPLACE_ENV_VARIABLES: "TRUE"
+      REPLACE_ENV_DURING_SYNC: "TRUE"
+      REPLACE_ENV_SUFFIXES: "yml,yaml,txt,cfg,conf,properties,hjson,json,tml,toml,secret"
+      ENV_VARIABLE_PREFIX: "WST_"
+      # Set variables
+      WST_VELOCITY_SECRET: "${NETWORK_SECRET}"
     restart: always
     volumes:
       # Lobby data
-      - ./Docker/ServiceData/westonia-lobby-data:/data
+      - ./Docker/ServiceData/${ENVIRONMENT}/westonia-lobby-data:/data
       # Lobby config
       - ./Docker/MinecraftDefaults/GeneralPurpurConfig/config/paper-global.yml:/config/paper-global.yml
       #- ./Docker/MinecraftDefaults/ConfigLobby/config.yml:/config/PluginConfig/config.yml
@@ -60,24 +77,29 @@ services:
   # Roleplay Server #
   ###################
   westonia-rp:
-    build:
-      context: Docker/
-      dockerfile: Dockerfiles/WestoniaRP.Dockerfile
+    image: itzg/minecraft-server
     environment:
       EULA: "TRUE"
       MEMORY: "${RP_MEMORY-2G}"
-      PURPUR_BUILD: "2324"
-      ONLINE_MODE: "FALSE"
       TYPE: "PURPUR"
       tty: true
       stdin_open: true
-      ENABLE_AUTOPAUSE: "TRUE"
-      SNOOPER_ENABLED: "FALSE"
+      ONLINE_MODE: "FALSE"
+      PURPUR_BUILD: "${PURPUR_BUILD-latest}"
+      ENABLE_AUTOPAUSE: true
       MAX_TICK_TIME: "-1"
+      MAX_PLAYERS: "${RP_MAX_PLAYERS-15}"
+      # enable env variable replacement
+      REPLACE_ENV_VARIABLES: "TRUE"
+      REPLACE_ENV_DURING_SYNC: "TRUE"
+      REPLACE_ENV_SUFFIXES: "yml,yaml,txt,cfg,conf,properties,hjson,json,tml,toml,secret"
+      ENV_VARIABLE_PREFIX: "WST_"
+      # Set variables
+      WST_VELOCITY_SECRET: "${NETWORK_SECRET}"
     restart: always
     volumes:
       # RP data
-      - ./Docker/ServiceData/westonia-rp-data:/data
+      - ./Docker/ServiceData/${ENVIRONMENT}/westonia-rp-data:/data
       # RP config
       - ./Docker/MinecraftDefaults/GeneralPurpurConfig/config/paper-global.yml:/config/paper-global.yml
       #- ./Docker/MinecraftDefaults/ConfigRP/config.yml:/config/PluginConfig/config.yml
@@ -97,16 +119,23 @@ services:
       MEMORY: "${BUILDING_MEMORY-2G}"
       TYPE: "PURPUR"
       tty: true
-      ONLINE_MODE: "FALSE"
       stdin_open: true
-      PURPUR_BUILD: "2324"
-      ENABLE_AUTOPAUSE: "TRUE"
-      SNOOPER_ENABLED: "FALSE"
+      ONLINE_MODE: "FALSE"
+      PURPUR_BUILD: "${PURPUR_BUILD-latest}"
+      ENABLE_AUTOPAUSE: true
       MAX_TICK_TIME: "-1"
+      MAX_PLAYERS: "${BUILDING_MAX_PLAYERS-15}"
+      # enable env variable replacement
+      REPLACE_ENV_VARIABLES: "TRUE"
+      REPLACE_ENV_DURING_SYNC: "TRUE"
+      REPLACE_ENV_SUFFIXES: "yml,yaml,txt,cfg,conf,properties,hjson,json,tml,toml,secret"
+      ENV_VARIABLE_PREFIX: "WST_"
+      # Set variables
+      WST_VELOCITY_SECRET: "${NETWORK_SECRET}"
     restart: always
     volumes:
       # Building data
-      - ./Docker/ServiceData/westonia-building-data/:/data
+      - ./Docker/ServiceData/${ENVIRONMENT}/westonia-building-data/:/data
       # Building config
       - ./Docker/MinecraftDefaults/GeneralPurpurConfig/config/paper-global.yml:/config/paper-global.yml
       #- ./Docker/MinecraftDefaults/ConfigBuilding/config.yml:/config/PluginConfig/config.yml
