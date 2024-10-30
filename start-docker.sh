@@ -15,4 +15,4 @@ if [ ! -f "$envFile" ]; then
 fi
 
 # Start Docker Compose with the specified environment file
-docker-compose --env-file "$envFile" up -d
+docker compose --env-file "$envFile" up -d
