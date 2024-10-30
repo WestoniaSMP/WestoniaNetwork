@@ -6,8 +6,8 @@ services:
   westonia-proxy:
     image: itzg/mc-proxy
     environment:
-      tty: true
-      stdin_open: true
+      tty: "TRUE"
+      stdin_open: "TRUE"
       # Proxy settings      
       TYPE: "VELOCITY"
       VELOCITY_BUILD_ID: "${VELOCITY_BUILD-latest}"
@@ -46,11 +46,11 @@ services:
       EULA: "TRUE"
       MEMORY: "${LOBBY_MEMORY-2G}"
       TYPE: "PURPUR"
-      tty: true
-      stdin_open: true
+      tty: "TRUE"
+      stdin_open: "TRUE"
       ONLINE_MODE: "FALSE"
       PURPUR_BUILD: "${PURPUR_BUILD-latest}"
-      ENABLE_AUTOPAUSE: true
+      ENABLE_AUTOPAUSE: "TRUE"
       MAX_TICK_TIME: "-1"
       MAX_PLAYERS: "${LOBBY_MAX_PLAYERS-15}"
       # enable env variable replacement
@@ -77,16 +77,18 @@ services:
   # Roleplay Server #
   ###################
   westonia-rp:
-    image: itzg/minecraft-server
+    build:
+      context: Docker/
+      dockerfile: Dockerfiles/WestoniaRP.Dockerfile
     environment:
       EULA: "TRUE"
       MEMORY: "${RP_MEMORY-2G}"
       TYPE: "PURPUR"
-      tty: true
-      stdin_open: true
+      tty: "TRUE"
+      stdin_open: "TRUE"
       ONLINE_MODE: "FALSE"
       PURPUR_BUILD: "${PURPUR_BUILD-latest}"
-      ENABLE_AUTOPAUSE: true
+      ENABLE_AUTOPAUSE: "TRUE"
       MAX_TICK_TIME: "-1"
       MAX_PLAYERS: "${RP_MAX_PLAYERS-15}"
       # enable env variable replacement
@@ -118,11 +120,11 @@ services:
       EULA: "TRUE"
       MEMORY: "${BUILDING_MEMORY-2G}"
       TYPE: "PURPUR"
-      tty: true
-      stdin_open: true
+      tty: "TRUE"
+      stdin_open: "TRUE"
       ONLINE_MODE: "FALSE"
       PURPUR_BUILD: "${PURPUR_BUILD-latest}"
-      ENABLE_AUTOPAUSE: true
+      ENABLE_AUTOPAUSE: "TRUE"
       MAX_TICK_TIME: "-1"
       MAX_PLAYERS: "${BUILDING_MAX_PLAYERS-15}"
       # enable env variable replacement
