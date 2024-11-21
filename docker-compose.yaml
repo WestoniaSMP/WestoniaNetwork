@@ -179,7 +179,7 @@ services:
       # Building plugins
       - ./Docker/MinecraftDefaults/PluginsBuilding/:/plugins
     networks:
-      - minecraft_${ENVIRONMENT}
+      - minecraft
 
 ############
 # Networks #
