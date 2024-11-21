@@ -5,5 +5,5 @@ url = https://github.com/WestoniaSMP/WestoniaWeb.git
 path = Westonia
 url = https://github.com/WestoniaSMP/Westonia.git
 [submodule "WestoniaAPI"]
-	path = WestoniaAPI
-	url = https://github.com/WestoniaSMP/WestoniaAPI
+path = WestoniaAPI
+url = https://github.com/WestoniaSMP/WestoniaAPI

@@ -1,4 +1,36 @@
 services:
+  ###################
+  #    Westonia     #
+  # Database Server #
+  ###################
+  westonia-database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${DATABASE_PASSWORD}
+    ports:
+      - "1433:1433"
+      - "1434:1434"
+    networks:
+      - minecraft
+  #################################
+  #            Westonia           #
+  # Database Server Configuration #
+  #################################
+  westonia-database.configurator:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    volumes:
+      - .Docker/DatabaseDefaults/init:/docker-entrypoint-initdb.d
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+    depends_on:
+      westonia-database:
+        condition: service_started
+    command: >
+      bash -c '
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password:-#password123sdJwnwlk} -d master -i docker-entrypoint-initdb.d/init.sql;
+      echo "All done!";
+      '
   ##################
   #    Westonia    #
   # Velocity Proxy #
@@ -49,7 +81,8 @@ services:
       tty: "TRUE"
       stdin_open: "TRUE"
       ONLINE_MODE: "FALSE"
-      PURPUR_BUILD: "${PURPUR_BUILD-2328}"
+      VERSION: "${PURPUR_VERSION-1.21.1}"
+      PURPUR_BUILD: "${PURPUR_BUILD-2329}"
       ENABLE_AUTOPAUSE: "TRUE"
       MAX_TICK_TIME: "-1"
       MAX_PLAYERS: "${LOBBY_MAX_PLAYERS-15}"
@@ -87,7 +120,8 @@ services:
       tty: "TRUE"
       stdin_open: "TRUE"
       ONLINE_MODE: "FALSE"
-      PURPUR_BUILD: "${PURPUR_BUILD-2328}"
+      VERSION: "${PURPUR_VERSION-1.21.1}"
+      PURPUR_BUILD: "${PURPUR_BUILD-2329}"
       ENABLE_AUTOPAUSE: "TRUE"
       MAX_TICK_TIME: "-1"
       MAX_PLAYERS: "${RP_MAX_PLAYERS-15}"
@@ -123,7 +157,8 @@ services:
       tty: "TRUE"
       stdin_open: "TRUE"
       ONLINE_MODE: "FALSE"
-      PURPUR_BUILD: "${PURPUR_BUILD-2328}"
+      VERSION: "${PURPUR_VERSION-1.21.1}"
+      PURPUR_BUILD: "${PURPUR_BUILD-2329}"
       ENABLE_AUTOPAUSE: "TRUE"
       MAX_TICK_TIME: "-1"
       MAX_PLAYERS: "${BUILDING_MAX_PLAYERS-15}"
@@ -142,27 +177,9 @@ services:
       - ./Docker/MinecraftDefaults/GeneralPurpurConfig/config/paper-global.yml:/config/paper-global.yml
       #- ./Docker/MinecraftDefaults/ConfigBuilding/config.yml:/config/PluginConfig/config.yml
       # Building plugins
-      #- ./Docker/MinecraftDefaults/PluginsBuilding/:/plugins
+      - ./Docker/MinecraftDefaults/PluginsBuilding/:/plugins
     networks:
       - minecraft
-
-  ###################
-  #    Westonia     #
-  # Database Server #
-  ###################
-  westonia-database:
-    image: mcr.microsoft.com/mssql/server:2022-preview-ubuntu-22.04
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=${DATABASE_PASSWORD}
-      - MSSQL_PID=Evaluation
-    ports:
-      - "1433:1433"
-      - "1434:1434"
-    networks:
-      - minecraft
-    volumes:
-      - .Docker/DatabaseDefaults/init.sql:/docker-entrypoint-initdb.d/init.sql
 
 ############
 # Networks #
