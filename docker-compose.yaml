@@ -55,7 +55,7 @@ services:
       WST_PROXY_MOTD: "${MOTD}"
       WST_PROXY_MAX_PLAYERS: "${PROXY_MAX_PLAYERS-25}"
     ports:
-      - "${HOST_PORT-25565}:25565"
+      - "${HOST_PORT-25565}:25577"
     restart: always
     volumes:
       # Proxy data
