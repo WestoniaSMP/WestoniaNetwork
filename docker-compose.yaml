@@ -83,7 +83,7 @@ services:
       ONLINE_MODE: "FALSE"
       VERSION: "${PURPUR_VERSION-1.21.1}"
       PURPUR_BUILD: "${PURPUR_BUILD-2329}"
-      ENABLE_AUTOPAUSE: "TRUE"
+      ENABLE_AUTOPAUSE: "FALSE"
       MAX_TICK_TIME: "-1"
       MAX_PLAYERS: "${LOBBY_MAX_PLAYERS-15}"
       # enable env variable replacement
@@ -122,7 +122,7 @@ services:
       ONLINE_MODE: "FALSE"
       VERSION: "${PURPUR_VERSION-1.21.1}"
       PURPUR_BUILD: "${PURPUR_BUILD-2329}"
-      ENABLE_AUTOPAUSE: "TRUE"
+      ENABLE_AUTOPAUSE: "FALSE"
       MAX_TICK_TIME: "-1"
       MAX_PLAYERS: "${RP_MAX_PLAYERS-15}"
       # enable env variable replacement
@@ -159,7 +159,7 @@ services:
       ONLINE_MODE: "FALSE"
       VERSION: "${PURPUR_VERSION-1.21.1}"
       PURPUR_BUILD: "${PURPUR_BUILD-2329}"
-      ENABLE_AUTOPAUSE: "TRUE"
+      ENABLE_AUTOPAUSE: "FALSE"
       MAX_TICK_TIME: "-1"
       MAX_PLAYERS: "${BUILDING_MAX_PLAYERS-15}"
       # enable env variable replacement
