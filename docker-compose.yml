@@ -4,33 +4,90 @@ services:
   # Database Server #
   ###################
   westonia-database:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=${DATABASE_PASSWORD}
+    image: mariadb
+    restart: always
     ports:
-      - "1433:1433"
-      - "1434:1434"
+      - "3306:3306"
+    environment:
+      MARIADB_PASSWORD: ${DATABASE_USER_PASSWORD}
+      MARIADB_USER: ${DATABASE_USER}
+      MARIADB_DATABASE: ${DATABASE_NAME}
+      MARIADB_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
     networks:
       - minecraft
-  #################################
-  #            Westonia           #
-  # Database Server Configuration #
-  #################################
-  westonia-database.configurator:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    volumes:
-      - .Docker/DatabaseDefaults/init:/docker-entrypoint-initdb.d
+  ################################
+  #           Westonia           #
+  #     Database Server Panel    #
+  ################################
+  adminer:
+    image: adminer
+    restart: always
     environment:
-      - DATABASE_NAME=${DATABASE_NAME}
-    depends_on:
-      westonia-database:
-        condition: service_started
-    command: >
-      bash -c '
-      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password:-#password123sdJwnwlk} -d master -i docker-entrypoint-initdb.d/init.sql;
-      echo "All done!";
-      '
+      ADMINER_DEFAULT_SERVER: westonia-database
+    ports:
+      - "8088:8080"
+    networks:
+      - minecraft
+#  ###################
+#  #    Westonia     #
+#  # Database Server #
+#  ###################
+#  westonia-database:
+#    image: mcr.microsoft.com/mssql/server:2022-latest
+#    environment:
+#      - ACCEPT_EULA=Y
+#      - SA_PASSWORD=${DATABASE_PASSWORD}
+#    ports:
+#      - "1433:1433"
+#      - "1434:1434"
+#    networks:
+#      - minecraft
+#  #################################
+#  #            Westonia           #
+#  # Database Server Configuration #
+#  #################################
+#  westonia-database.configurator:
+#    image: mcr.microsoft.com/mssql/server:2022-latest
+#    volumes:
+#      - .Docker/DatabaseDefaults/init:/docker-entrypoint-initdb.d
+#    environment:
+#      - DATABASE_NAME=${DATABASE_NAME}
+#    depends_on:
+#      westonia-database:
+#        condition: service_started
+#    command: >
+#      bash -c '
+#      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password:-#password123sdJwnwlk} -d master -i docker-entrypoint-initdb.d/init.sql;
+#      echo "All done!";
+#      '
+  ##################
+  #    Westonia    #
+  #     WebAPI     #
+  ##################
+  westoniaapi:
+    image: westoniaapi
+    build:
+      context: ./WestoniaAPI/
+      dockerfile: ./WestoniaAPI/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      #- dataprotection:/app/dataprotection # Persistent Storage for Data Protection Keys
+    networks:
+      - minecraft
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - minecraft
   ##################
   #    Westonia    #
   # Velocity Proxy #
@@ -196,5 +253,3 @@ networks:
 ###########
 #volumes:
 #  westonia-proxy-data:
-#  westonia-lobby-data:
-#  westonia-rp-data:
